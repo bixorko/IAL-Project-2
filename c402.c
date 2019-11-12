@@ -195,59 +195,50 @@ void BTInsert (tBTNodePtr *RootPtr, int Content) {
 
     if (*RootPtr == NULL){
         (*RootPtr) = malloc(sizeof(struct tBTNode));
-
-        if ((*RootPtr) == NULL){
-            exit(1);
-        }
-
-        (*RootPtr)->Cont = Content;
         (*RootPtr)->LPtr = NULL;
         (*RootPtr)->RPtr = NULL;
+        (*RootPtr)->Cont = Content;
         return;
     }
 
-    int found = 0;
-    tBTNodePtr where;
+    tBTNodePtr where = *RootPtr;
 
-    where = (*RootPtr);
-    while (found == 0 && (where->RPtr != NULL && where->LPtr != NULL)){
-        if (where->Cont > Content){
+    while (where != NULL){
+        if (where->Cont == Content){
+            break;
+        }
+        else if (where->Cont > Content){
+            if (where->LPtr == NULL){
+                break;
+            }
             where = where->LPtr;
         }
         else if (where->Cont < Content){
+            if (where->RPtr == NULL){
+                break;
+            }
             where = where->RPtr;
         }
-        else {
-            found = 1;
-        }
     }
 
-    if ((where->RPtr == NULL && where->LPtr == NULL)){
-        if (where->Cont == Content) {
-            where->Cont = Content;
-            return;
-        }
+    if (where->Cont == Content){
+        return;
     }
 
-    if (found == 1){
-        where->Cont = Content;
+    tBTNodePtr newPtr = malloc(sizeof(struct tBTNode));
+    if (newPtr == NULL){
+        exit(1);
+    }
+
+    newPtr->RPtr = NULL;
+    newPtr->LPtr = NULL;
+    newPtr->Cont = Content;
+
+    if (where->Cont > Content){
+        where->LPtr = newPtr;
     }
     else {
-        tBTNodePtr newPtr = malloc(sizeof(struct tBTNode));
-        if (newPtr == NULL){
-            exit(1);
-        }
-
-        newPtr->RPtr = NULL;
-        newPtr->LPtr = NULL;
-        newPtr->Cont = Content;
-
-        if (where->Cont > Content){
-            where->LPtr = newPtr;
-        }
-        else {
-            where->RPtr = newPtr;
-        }
+        where->RPtr = newPtr;
     }
 }
 
